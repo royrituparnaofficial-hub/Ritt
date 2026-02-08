@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Ritt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: -apple-system, system-ui;
+      background: #0f1115;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 { margin-top: 0; }
+
+    .card {
+      background: #1a1d24;
+      padding: 15px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      background: #6c7cff;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      background: #2a2e38;
+      color: white;
+    }
+
+    canvas { margin-top: 15px; }
+  </style>
+</head>
+
+<body>
+
+<h1>🌑 Ritt</h1>
+
+<div class="card">
+  <h3>Today's Tasks</h3>
+  <input id="taskInput" placeholder="Add task">
+  <button onclick="addTask()">Add</button>
+  <ul id="tasks"></ul>
+</div>
+
+<div class="card">
+  <h3>Workout</h3>
+  <button onclick="generateWorkout()">Generate Workout</button>
+  <ul id="workouts"></ul>
+</div>
+
+<div class="card">
+  <h3>Progress</h3>
+  <canvas id="chart" width="200" height="200"></canvas>
+</div>
+
+<script>
+let tasks = [];
+let workouts = [];
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function addTask() {
+  const taskInput = document.getElementById('taskInput');
+  const text = taskInput.value;
+  if(!text) return;
+  tasks.push({text, done:false});
+  taskInput.value="";
+  render();
+}
+
+function generateWorkout() {
+  const gym = confirm("Gym today? OK = Gym, Cancel = Home");
+
+  workouts = gym
+    ? ["Bench Press","Rows","Squats","Shoulders"]
+    : ["Pushups","Squats","Plank","Lunges"];
+
+  workouts = workouts.map(w=>({text:w,done:false}));
+  render();
+}
+
+function toggle(list, i) {
+  list[i].done = !list[i].done;
+  render();
+}
+
+function render() {
+  const tasksEl = document.getElementById('tasks');
+  const workoutsEl = document.getElementById('workouts');
+  
+  tasksEl.innerHTML="";
+  workoutsEl.innerHTML="";
+
+  tasks.forEach((t,i)=>{
+    tasksEl.innerHTML+=`<li><input type="checkbox" onclick="toggle(tasks,${i})" ${t.done?"checked":""}> ${escapeHtml(t.text)}</li>`;
+  });
+
+  workouts.forEach((w,i)=>{
+    workoutsEl.innerHTML+=`<li><input type="checkbox" onclick="toggle(workouts,${i})" ${w.done?"checked":""}> ${escapeHtml(w.text)}</li>`;
+  });
+
+  drawChart();
+}
+
+function drawChart(){
+  const chart = document.getElementById('chart');
+  const ctx = chart.getContext("2d");
+
+  const total = tasks.length + workouts.length;
+  const done =
+    tasks.filter(t=>t.done).length +
+    workouts.filter(w=>w.done).length;
+
+  const percent = total? done/total : 0;
+
+  ctx.clearRect(0,0,200,200);
+
+  ctx.beginPath();
+  ctx.arc(100,100,80,0,Math.PI*2);
+  ctx.strokeStyle="#2a2e38";
+  ctx.lineWidth=20;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(100,100,80,-Math.PI/2,(Math.PI*2*percent)-Math.PI/2);
+  ctx.strokeStyle="#6c7cff";
+  ctx.lineWidth=20;
+  ctx.stroke();
+
+  ctx.font="20px sans-serif";
+  ctx.fillText(Math.round(percent*100)+"%",75,110);
+}
+</script>
+
+</body>
+</html>
