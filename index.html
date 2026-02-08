@@ -71,6 +71,12 @@
 let tasks = [];
 let workouts = [];
 
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function addTask() {
   const text = taskInput.value;
   if(!text) return;
@@ -103,11 +109,11 @@ function render() {
   workoutsEl.innerHTML="";
 
   tasks.forEach((t,i)=>{
-    tasksEl.innerHTML+=`<li><input type=checkbox onclick="toggle(tasks,${i})" ${t.done?"checked":""}> ${t.text}</li>`;
+    tasksEl.innerHTML+=`<li><input type="checkbox" onclick="toggle(tasks,${i})" ${t.done?"checked":""}> ${escapeHtml(t.text)}</li>`;
   });
 
   workouts.forEach((w,i)=>{
-    workoutsEl.innerHTML+=`<li><input type=checkbox onclick="toggle(workouts,${i})" ${w.done?"checked":""}> ${w.text}</li>`;
+    workoutsEl.innerHTML+=`<li><input type="checkbox" onclick="toggle(workouts,${i})" ${w.done?"checked":""}> ${escapeHtml(w.text)}</li>`;
   });
 
   drawChart();
