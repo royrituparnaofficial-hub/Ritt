@@ -78,6 +78,7 @@ function escapeHtml(text) {
 }
 
 function addTask() {
+  const taskInput = document.getElementById('taskInput');
   const text = taskInput.value;
   if(!text) return;
   tasks.push({text, done:false});
@@ -120,6 +121,7 @@ function render() {
 }
 
 function drawChart(){
+  const chart = document.getElementById('chart');
   const ctx = chart.getContext("2d");
 
   const total = tasks.length + workouts.length;
