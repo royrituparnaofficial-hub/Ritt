@@ -1,1 +1,2 @@
-python-dateutil>=2.8.2
+# No external dependencies required
+# The app uses only Python standard library
